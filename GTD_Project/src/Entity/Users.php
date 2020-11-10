@@ -6,10 +6,17 @@ use App\Repository\UsersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\UserInterface;
+
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UsersRepository::class)
+ * @UniqueEntity(
+ *     fields={"username"},
+ *     message="Cet identifiant existe déjà, Veuillez vous connecter"
+ * )
  */
 class Users implements UserInterface
 {
@@ -29,6 +36,11 @@ class Users implements UserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $password;
+
+    /**
+     * @Assert\EqualTo(propertyPath="password", message="Les mots de passe ne sont pas identiques")
+     */
+    private $passwordVerification;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -98,6 +110,18 @@ class Users implements UserInterface
     public function setPassword(string $password): self
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPasswordVerification(): ?string
+    {
+        return $this->passwordVerification;
+    }
+
+    public function setPasswordVerification(string $passwordVerification): self
+    {
+        $this->passwordVerification = $passwordVerification;
 
         return $this;
     }
