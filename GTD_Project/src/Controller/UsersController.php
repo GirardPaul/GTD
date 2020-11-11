@@ -44,10 +44,12 @@ class UsersController extends AbstractController
             "form" => $form->createView()
         ]);
     }
+
     /**
      * @Route("/login", name="login")
+     * @param AuthenticationUtils $utils
+     * @return Response
      */
-
     public function login(AuthenticationUtils $utils)
     {
         return $this->render('users/login.html.twig', [
