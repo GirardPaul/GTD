@@ -19,32 +19,40 @@ class FriendshipRepository extends ServiceEntityRepository
         parent::__construct($registry, Friendship::class);
     }
 
-    // /**
-    //  * @return Friendship[] Returns an array of Friendship objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function checkRelationExist($senderId, $targetId)
     {
         return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('f.id', 'ASC')
-            ->setMaxResults(10)
+            ->select()
+            ->andWhere('f.sender = :senderId OR f.sender = :targetId')
+            ->andWhere('f.target = :targetId OR f.target = :senderId')
+            ->setParameter('senderId', $senderId)
+            ->setParameter('targetId', $targetId)
+            ->andWhere('f.acceptedAt IS NULL')
             ->getQuery()
-            ->getResult()
-        ;
+            ->getResult();
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Friendship
+    public function checkAskForFriend($targetId)
     {
         return $this->createQueryBuilder('f')
-            ->andWhere('f.exampleField = :val')
-            ->setParameter('val', $value)
+            ->select()
+            ->andWhere('f.target = :targetId')
+            ->setParameter('targetId', $targetId)
+            ->andWhere('f.acceptedAt IS NULL')
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->getResult();
     }
-    */
+
+    public function getAllRelationFriendsOfUser($userId)
+    {
+        return $this->createQueryBuilder('f')
+            ->select()
+            ->andWhere('f.sender = :userId')
+            ->orWhere('f.target = :userId')
+            ->setParameter('userId', $userId)
+            ->andWhere('f.acceptedAt IS NOT NULL')
+            ->orderBy('f.acceptedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

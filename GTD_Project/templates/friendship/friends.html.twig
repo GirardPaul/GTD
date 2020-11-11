@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des amis{% endblock %}
+
+{% block body %}
+
+    {% if friends == [] %}
+
+        <h1 class="text-center">Vous n'avez aucune relation</h1>
+
+    {% else %}
+
+        <div class="row justify-content-center">
+            {% for friend in friends %}
+                <div class="col-3">
+                    <div class="card" style="width: 18rem;">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if friend.sender.username == app.user.username and  friend.target.username != app.user.username %}
+
+                                    {{ friend.target.username }}
+
+                                {% elseif friend.target.username == app.user.username and friend.sender.username != app.user.username %}
+
+                                    {{ friend.sender.username }}
+
+                                {% endif %}
+                            </h5>
+                            <h6 class="card-subtitle mb-2 text-muted">
+                                {% if friend.sender.username == app.user.username and  friend.target.username != app.user.username %}
+
+                                    {{ friend.target.genre.label }}
+
+                                {% elseif friend.target.username == app.user.username and friend.sender.username != app.user.username %}
+
+                                    {{ friend.sender.genre.label }}
+
+                                {% endif %}
+                            </h6>
+                            <p class="card-text">
+
+                                Pokémon favori :
+
+                                {% if friend.sender.username == app.user.username and  friend.target.username != app.user.username %}
+
+                                    {{ friend.target.favoritePokemon }}
+
+                                {% elseif friend.target.username == app.user.username and friend.sender.username != app.user.username %}
+
+                                    {{ friend.sender.favoritePokemon }}
+
+                                {% endif %}
+                            </p>
+                            <a href="{{ path('ask_delete', {'id': friend.id}) }}" title="Supprimer">
+                                <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-person-x-fill" fill="red" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6zm6.146-2.854a.5.5 0 0 1 .708 0L14 6.293l1.146-1.147a.5.5 0 0 1 .708.708L14.707 7l1.147 1.146a.5.5 0 0 1-.708.708L14 7.707l-1.146 1.147a.5.5 0 0 1-.708-.708L13.293 7l-1.147-1.146a.5.5 0 0 1 0-.708z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            {% endfor %}
+        </div>
+
+    {% endif %}
+
+
+{% endblock %}
