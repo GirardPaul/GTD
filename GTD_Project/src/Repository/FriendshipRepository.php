@@ -55,4 +55,16 @@ class FriendshipRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+    public function checkRelationFriendsExist($senderId, $targetId)
+    {
+        return $this->createQueryBuilder('f')
+            ->select()
+            ->andWhere('f.sender = :senderId OR f.sender = :targetId')
+            ->andWhere('f.target = :targetId OR f.target = :senderId')
+            ->setParameter('senderId', $senderId)
+            ->setParameter('targetId', $targetId)
+            ->andWhere('f.acceptedAt IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
 }

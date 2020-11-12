@@ -4,12 +4,14 @@ namespace App\Controller;
 
 use App\Entity\Users;
 use App\Form\RegisterType;
+use App\Repository\UsersRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
 class UsersController extends AbstractController
@@ -64,5 +66,19 @@ class UsersController extends AbstractController
     public function logout()
     {
         return $this->render('genre/index.html.twig');
+    }
+
+    /**
+     * @Route("/profile", name="profile")
+     * @param Security $security
+     * @param UsersRepository $usersRepository
+     * @return Response
+     */
+    public function showProfile(Security $security, UsersRepository $usersRepository)
+    {
+        return $this->render('users/profile.html.twig', [
+            "user" => $security->getUser()
+        ]);
+
     }
 }

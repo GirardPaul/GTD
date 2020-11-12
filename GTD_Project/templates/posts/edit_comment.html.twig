@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edition Comentaire{% endblock %}
+
+{% block body %}
+
+
+
+    {{ form_start(form) }}
+
+    {{ form_row(form.contenu, {
+        "attr": {"placeholder" : "Saisissez votre commentaire",
+            "class": "form-control"
+        }
+    }) }}
+
+    {{ form_end(form) }}
+
+
+{% endblock %}
+{% block javascripts %}
+    <script>
+
+        let form = document.querySelector('form');
+        let textContent = document.querySelector('#comments_contenu');
+
+        textContent.addEventListener('keypress', function(e){
+            if(e.key === 'Enter')
+            {
+                form.submit();
+            }
+        })
+
+    </script>
+{% endblock %}
