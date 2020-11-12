@@ -12,12 +12,8 @@
                 <td>{{ post.id }}</td>
             </tr>
             <tr>
-                <th>CreatedAt</th>
-                <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ post.updatedAt ? post.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+                <th>Date</th>
+                <td>{{ post.updatedAt ? post.updatedAt|date('Y-m-d H:i:s') : post.createdAt|date('Y-m-d H:i:s') }}</td>
             </tr>
             <tr>
                 <th>Description</th>
@@ -32,7 +28,13 @@
 
     <a href="{{ path('posts_index') }}">back to list</a>
 
+
+    {% if app.user.id == post.user.id %}
     <a href="{{ path('posts_edit', {'id': post.id}) }}">edit</a>
 
     {{ include('posts/_delete_form.html.twig') }}
+    {% endif %}
+
+
+
 {% endblock %}

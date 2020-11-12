@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Fil d'actualité{% endblock %}
+
+{% block body %}
+
+    <div class="row">
+    {% for post in posts %}
+
+        {% for item in post %}
+
+        <div class="col-6">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.description }}</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ item.contenu }}</h6>
+                    <p class="card-text">
+
+                        {% if item.updatedAt != null %}
+                            {{ item.updatedAt|date('Y-m-d H:i:s')  }}
+                            {% else %}
+                            {{ item.createdAt|date('Y-m-d H:i:s')  }}
+                        {% endif %}
+
+                    </p>
+                    <p class="card-text">Créateur : {{ item.user.username }}</p>
+                    <a href="{{ path('posts_show', {'id': item.id}) }}" class="btn btn-primary">Voir plus</a>
+                </div>
+            </div>
+        </div>
+            {% endfor %}
+    {% endfor %}
+    </div>
+{% endblock %}

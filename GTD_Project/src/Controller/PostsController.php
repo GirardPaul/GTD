@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Posts;
 use App\Form\PostsType;
+use App\Repository\FriendshipRepository;
 use App\Repository\PostsRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,14 +14,10 @@ use App\Entity\Users;
 use Symfony\Component\Security\Core\Security;
 use App\Repository\UsersRepository;
 
-
-/**
- * @Route("/posts")
- */
 class PostsController extends AbstractController
 {
     /**
-     * @Route("/", name="posts_index", methods={"GET"})
+     * @Route("/posts", name="posts_index", methods={"GET"})
      */
     public function index(PostsRepository $postsRepository): Response
     {
@@ -30,7 +27,7 @@ class PostsController extends AbstractController
     }
 
     /**
-     * @Route("/new", name="posts_new", methods={"GET","POST"})
+     * @Route("/posts/new", name="posts_new", methods={"GET","POST"})
      */
     public function new(Request $request, Security $security, UsersRepository $usersRepository): Response
     {
@@ -54,7 +51,7 @@ class PostsController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="posts_show", methods={"GET"})
+     * @Route("/posts/{id}", name="posts_show", methods={"GET"})
      */
     public function show(Posts $post): Response
     {
@@ -64,7 +61,7 @@ class PostsController extends AbstractController
     }
 
     /**
-     * @Route("/{id}/edit", name="posts_edit", methods={"GET","POST"})
+     * @Route("/posts/{id}/edit", name="posts_edit", methods={"GET","POST"})
      */
     public function edit(Request $request, Posts $post): Response
     {
@@ -84,7 +81,7 @@ class PostsController extends AbstractController
     }
 
     /**
-     * @Route("/{id}", name="posts_delete", methods={"DELETE"})
+     * @Route("/posts/{id}", name="posts_delete", methods={"DELETE"})
      */
     public function delete(Request $request, Posts $post): Response
     {
@@ -95,5 +92,44 @@ class PostsController extends AbstractController
         }
 
         return $this->redirectToRoute('posts_index');
+    }
+
+    /**
+     * @Route("/", name="all_posts")
+     * @param FriendshipRepository $friendshipRepository
+     * @param Security $security
+     */
+    public function getAllPosts(FriendshipRepository $friendshipRepository, Security $security, PostsRepository $postsRepository)
+    {
+        $friends = $friendshipRepository->getAllRelationFriendsOfUser($security->getUser()->getId());
+
+        $arrayFriendsId = [];
+
+        for($i = 0; $i < count($friends); $i++)
+        {
+            if($friends[$i]->getSender()->getId() === $security->getUser()->getId())
+            {
+                array_push($arrayFriendsId, $friends[$i]->getTarget()->getId());
+            }
+            else{
+                array_push($arrayFriendsId, $friends[$i]->getSender()->getId());
+            }
+        }
+
+        $posts = [];
+
+        for($i = 0; $i < count($arrayFriendsId); $i++)
+        {
+            if($postsRepository->getAllPostsOfMyFriends($arrayFriendsId[$i]) !== [])
+            {
+                array_push($posts, $postsRepository->getAllPostsOfMyFriends($arrayFriendsId[$i]));
+            }
+
+        }
+
+        return $this->render('posts/fil_actualite.html.twig', [
+            "posts" => $posts
+        ]);
+
     }
 }

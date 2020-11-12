@@ -19,6 +19,16 @@ class PostsRepository extends ServiceEntityRepository
         parent::__construct($registry, Posts::class);
     }
 
+    public function getAllPostsOfMyFriends($currentUserId)
+    {
+        return $this->createQueryBuilder('q')
+            ->select()
+            ->andWhere('q.user = :currentUserId')
+            ->setParameter('currentUserId', $currentUserId)
+            ->orderBy('q.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return Posts[] Returns an array of Posts objects
     //  */
