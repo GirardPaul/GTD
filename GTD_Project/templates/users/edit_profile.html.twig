@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Editer son profil{% endblock %}
 
 {% block body %}
 
-{{ form_start(form)}}
+{{ form_start(form) }}
 
     {{ form_row(form.username, {
         "attr": {"placeholder" : "Saisissez votre username",
@@ -23,19 +23,18 @@
             "required": "false"
         }
     }) }}
-    {{ form_row(form.favoritePokemon, {
+  {{ form_row(form.favoritePokemon, {
         "attr": {"placeholder" : "Saisissez votre pokémon préféré",
             "class": "form-control"
         }
     }) }}{{ form_row(form.genre, {
-    "attr": {"placeholder" : "Saisissez votre genre",
-        "class": "form-control"
-    }
-}) }}
+        "attr": {"placeholder" : "Saisissez votre genre",
+            "class": "form-control"
+        }
+    }) }}
 
 
-<input type="submit" class="btn btn-primary" value="Valider">
-
+    <button type="submit" class="btn btn-primary mt-3">Modifier</button>
 {{ form_end(form) }}
 
 {% endblock %}
