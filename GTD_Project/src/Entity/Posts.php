@@ -6,9 +6,12 @@ use App\Repository\PostsRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * @ORM\Entity(repositoryClass=PostsRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Posts
 {
@@ -25,11 +28,13 @@ class Posts
     private $user;
 
     /**
+     * @var DateTime
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
+     * @var DateTime
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $updatedAt;
@@ -76,9 +81,14 @@ class Posts
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
-    {
-        $this->createdAt = $createdAt;
+    /**
+    * @ORM\PrePersist
+    */
+    public function setCreatedAt() {
+        try {
+            $this->createdAt = new DateTime('now', new \DateTimeZone("Europe/Paris"));
+        } catch (\Exception $e) {
+        }
 
         return $this;
     }
@@ -88,9 +98,14 @@ class Posts
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(?\DateTimeInterface $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
+    /**
+     * @ORM\PreUpdate
+     */
+    public function setUpdatedAt() {
+        try {
+            $this->updatedAt = new DateTime('now', new \DateTimeZone("Europe/Paris"));
+        } catch (\Exception $e) {
+        }
 
         return $this;
     }
@@ -148,4 +163,5 @@ class Posts
 
         return $this;
     }
+
 }
