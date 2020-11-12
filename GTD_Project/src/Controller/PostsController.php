@@ -4,10 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Comments;
 use App\Entity\Posts;
+use App\Entity\PostsReactions;
 use App\Form\CommentsType;
 use App\Form\PostsType;
 use App\Repository\CommentsRepository;
 use App\Repository\FriendshipRepository;
+use App\Repository\PostsReactionsRepository;
 use App\Repository\PostsRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -133,7 +135,7 @@ class PostsController extends AbstractController
      * @param PostsRepository $postsRepository
      * @return Response
      */
-    public function getAllPosts(FriendshipRepository $friendshipRepository, Security $security, PostsRepository $postsRepository)
+    public function getAllPosts(FriendshipRepository $friendshipRepository, Security $security, PostsRepository $postsRepository, PostsReactionsRepository $postsReactionsRepository)
     {
         $friends = $friendshipRepository->getAllRelationFriendsOfUser($security->getUser()->getId());
 
@@ -160,6 +162,7 @@ class PostsController extends AbstractController
             }
 
         }
+
 
         return $this->render('posts/fil_actualite.html.twig', [
             "posts" => $posts
@@ -208,5 +211,41 @@ class PostsController extends AbstractController
             "id" => $comments->getPost()->getId()
         ]);
     }
+
+    /**
+     * @Route("/post/pocebleu/{id}"), name="add_poce_bleu")
+     */
+    public function addPoceBleu($id, PostsRepository $postsRepository, Security $security, EntityManagerInterface $entityManager, PostsReactionsRepository $postsReactionsRepository)
+    {
+        $post = $postsRepository->find($id);
+        $user = $security->getUser();
+
+        if($postsReactionsRepository->checkPoceBleu($user->getId(), $post->getId()) !== true && $postsReactionsRepository->checkPoceBleu($user->getId(), $post->getId()) !== [])
+        {
+
+            $relation = $postsReactionsRepository->checkPoceBleu($user->getId(), $post->getId());
+
+            $postReaction = $postsReactionsRepository->find($relation[0]->getId());
+
+            $entityManager->remove($postReaction);
+            $entityManager->flush();
+
+            return $this->redirectToRoute("all_posts");
+        }
+        else{
+            $postReaction = new PostsReactions();
+            $postReaction->setUser($user)
+                ->setPost($post);
+            $entityManager->persist($postReaction);
+            $entityManager->flush();
+
+            return $this->redirectToRoute("all_posts");
+        }
+
+
+    }
+
+
+
 
 }

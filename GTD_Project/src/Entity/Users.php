@@ -77,12 +77,18 @@ class Users implements UserInterface
      */
     private $target;
 
+    /**
+     * @ORM\OneToMany(targetEntity=PostsReactions::class, mappedBy="user")
+     */
+    private $postsReactions;
+
     public function __construct()
     {
         $this->posts = new ArrayCollection();
         $this->comments = new ArrayCollection();
         $this->sender = new ArrayCollection();
         $this->target = new ArrayCollection();
+        $this->postsReactions = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -297,5 +303,35 @@ class Users implements UserInterface
     public function eraseCredentials()
     {
         // TODO: Implement eraseCredentials() method.
+    }
+
+    /**
+     * @return Collection|PostsReactions[]
+     */
+    public function getPostsReactions(): Collection
+    {
+        return $this->postsReactions;
+    }
+
+    public function addPostsReaction(PostsReactions $postsReaction): self
+    {
+        if (!$this->postsReactions->contains($postsReaction)) {
+            $this->postsReactions[] = $postsReaction;
+            $postsReaction->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostsReaction(PostsReactions $postsReaction): self
+    {
+        if ($this->postsReactions->removeElement($postsReaction)) {
+            // set the owning side to null (unless already changed)
+            if ($postsReaction->getUser() === $this) {
+                $postsReaction->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
